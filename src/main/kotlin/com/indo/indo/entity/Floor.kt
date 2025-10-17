@@ -7,25 +7,24 @@ import java.time.LocalDateTime
 import java.util.*
 
 @Entity
-@Table(name = "locations", schema = "navigation")
-data class Location(
+@Table(name = "floors", schema = "navigation")
+data class Floor(
     @Id
     @Column(columnDefinition = "uuid", updatable = false, nullable = false)
     val id: UUID = UUID.randomUUID(),
 
     @Column(nullable = false)
-    val name: String,
+    val number: Int,
 
-    @Column
-    val aliasName: String?,
+    @Column(nullable = true)
+    val imageUrl: String?,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "building_id", nullable = false)
     val building: Building,
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "floor_id", nullable = false)
-    val floor: Floor,
+    @OneToMany(mappedBy = "floor", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
+    val locations: MutableList<Location> = mutableListOf(),
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
