@@ -1,6 +1,9 @@
 package com.indo.indo.entity
 
 import jakarta.persistence.*
+import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.UpdateTimestamp
+import java.time.LocalDateTime
 import java.util.*
 
 @Entity
@@ -14,7 +17,7 @@ data class Location(
     val name: String,
 
     @Column
-    val secondaryName: String,
+    val aliasName: String?,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "building_id", nullable = false)
@@ -23,4 +26,12 @@ data class Location(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "floor_id", nullable = false)
     val floor: Floor,
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    val createdAt: LocalDateTime,
+
+    @UpdateTimestamp
+    @Column(nullable = false)
+    val updatedAt: LocalDateTime
 )
