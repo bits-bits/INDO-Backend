@@ -1,12 +1,11 @@
 package com.indo.indo.entity
 
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.FetchType
-import jakarta.persistence.Id
-import jakarta.persistence.OneToMany
-import jakarta.persistence.Table
+import jakarta.persistence.*
+import java.time.LocalDateTime
 import java.util.*
+import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.UpdateTimestamp
+
 
 @Entity
 @Table(name = "buildings", schema = "navigation")
@@ -21,9 +20,17 @@ data class Building(
     @Column
     val imageUrl: String?,
 
-    @OneToMany(mappedBy = "building", fetch = FetchType.LAZY)
-    val floors: List<Floor> = emptyList(),
+    @OneToMany(mappedBy = "building", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
+    val floors: MutableList<Floor> = mutableListOf(),
 
-    @OneToMany(mappedBy = "building", fetch = FetchType.LAZY)
-    val locations: List<Location> = emptyList()
+    @OneToMany(mappedBy = "building", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
+    val locations: MutableList<Location> = mutableListOf(),
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    val createdAt: LocalDateTime,
+
+    @UpdateTimestamp
+    @Column(nullable = false)
+    val updatedAt: LocalDateTime
 )
