@@ -5,7 +5,7 @@ import java.util.UUID
 
 class UUIDUtils {
 	companion object Utils {
-		fun isValidUUID(uuid: String): Boolean {
+		fun isValidUUIDString(uuid: String): Boolean {
 			try {
 				UUID.fromString(uuid);
 				return true;
