@@ -1,6 +1,5 @@
 package com.indo.indo.api.controller.v1
 
-import com.indo.indo.api.dto.FloorBasicDetails
 import com.indo.indo.api.dto.FloorDetailsResponse
 import com.indo.indo.api.mapper.FloorMapper
 import com.indo.indo.exception.InvalidIdFormException
