@@ -12,8 +12,8 @@ class BuildingMapper(private val floorMapper: FloorMapper) {
 			id = building.id.toString(),
 			name = building.name,
 			imageUrl = building.imageUrl,
-			floorsBasicDetails = building.floors?.sortedBy { it.number }?.map {
+			floorsBasicDetails = building.floors.sortedBy { it.number }.map {
 				floorMapper.toBasicDetails(it)
-			} ?: emptyList()
+			}
 		)
 }

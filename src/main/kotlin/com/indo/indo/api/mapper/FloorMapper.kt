@@ -16,12 +16,12 @@ class FloorMapper {
 			id = floor.toString(),
 			number = floor.number,
 			imageUrl = floor.imageUrl,
-			locations = floor.locations?.sortedBy { it.name }?.map {
+			locations = floor.locations.sortedBy { it.name }.map {
 				LocationByFloorDetails(
 					id = it.id.toString(),
 					name = it.name,
 					aliasName = it.aliasName,
 				)
-			} ?: emptyList()
+			}
 		)
 }
