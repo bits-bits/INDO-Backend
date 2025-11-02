@@ -8,30 +8,30 @@ import java.util.*
 
 @Entity
 @Table(name = "locations", schema = "navigation")
-data class Location(
-    @Id
-    @Column(columnDefinition = "uuid", updatable = false, nullable = false)
-    val id: UUID = UUID.randomUUID(),
+class Location(
+	@Id
+	@Column(columnDefinition = "uuid", updatable = false, nullable = false)
+	val id: UUID = UUID.randomUUID(),
 
-    @Column(nullable = false)
-    val name: String,
+	@Column(nullable = false)
+	val name: String,
 
-    @Column
-    val aliasName: String?,
+	@Column
+	val aliasName: String?,
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "building_id", nullable = false)
-    val building: Building,
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "building_id", nullable = false)
+	val building: Building,
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "floor_id", nullable = false)
-    val floor: Floor,
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "floor_id", nullable = false)
+	val floor: Floor,
 
-    @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    val createdAt: LocalDateTime,
+	@CreationTimestamp
+	@Column(nullable = false, updatable = false)
+	val createdAt: LocalDateTime,
 
-    @UpdateTimestamp
-    @Column(nullable = false)
-    val updatedAt: LocalDateTime
+	@UpdateTimestamp
+	@Column(nullable = false)
+	val updatedAt: LocalDateTime
 )
