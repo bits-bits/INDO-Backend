@@ -17,11 +17,11 @@ fun Floor.toDetailsResponse(): FloorDetailsResponse {
 		id = this.id.toString(),
 		number = this.number,
 		imageUrl = this.imageUrl,
-		locations = this.locations.sortedBy { it.name }.map {
+		locations = this.locations.sortedBy { it.name }.map { floor ->
 			LocationByFloorDetails(
-				id = it.id.toString(),
-				name = it.name,
-				aliasName = it.aliasName,
+				id = floor.id.toString(),
+				name = floor.name,
+				aliasName = floor.aliasName,
 			)
 		}
 	)

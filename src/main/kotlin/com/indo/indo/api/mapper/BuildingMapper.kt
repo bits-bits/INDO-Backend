@@ -8,7 +8,7 @@ fun Building.toBuildingDetailsResponse() =
 		id = this.id.toString(),
 		name = this.name,
 		imageUrl = this.imageUrl,
-		floorsBasicDetails = this.floors.sortedBy { it.number }.map {
-			it.toBasicDetails()
+		floorsBasicDetails = this.floors.sortedBy { it.number }.map { floor ->
+			floor.toBasicDetails()
 		}
 	)
