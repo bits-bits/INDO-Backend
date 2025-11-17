@@ -14,7 +14,7 @@ class GlobalExceptionHandler {
 
 	@ExceptionHandler(InvalidIdFormException::class)
 	fun handleInvalidIdForm(ex: InvalidIdFormException): ResponseEntity<Map<String, String>> {
-		return ResponseEntity.status(404).body(mapOf("error" to "${ex.message}"))
+		return ResponseEntity.status(400).body(mapOf("error" to "${ex.message}"))
 	}
 
 	@ExceptionHandler(Exception::class)
