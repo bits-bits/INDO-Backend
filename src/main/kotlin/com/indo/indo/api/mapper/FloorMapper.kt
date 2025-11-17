@@ -6,22 +6,24 @@ import com.indo.indo.api.dto.LocationByFloorDetails
 import com.indo.indo.entity.Floor
 import org.springframework.stereotype.Component
 
-@Component
-class FloorMapper {
-	fun toBasicDetails(floor: Floor): FloorBasicDetails =
-		FloorBasicDetails(id = floor.id.toString(), number = floor.number)
+fun Floor.toBasicDetails(): FloorBasicDetails {
+	return FloorBasicDetails(
+		id = this.id.toString(),
+		number = this.number
+	)
+}
 
-	fun toFloorDetailsResponse(floor: Floor): FloorDetailsResponse =
-		FloorDetailsResponse(
-			id = floor.toString(),
-			number = floor.number,
-			imageUrl = floor.imageUrl,
-			locations = floor.locations.sortedBy { it.name }.map {
-				LocationByFloorDetails(
-					id = it.id.toString(),
-					name = it.name,
-					aliasName = it.aliasName,
-				)
-			}
-		)
+fun Floor.toDetailsResponse(): FloorDetailsResponse {
+	return FloorDetailsResponse(
+		id = this.id.toString(),
+		number = this.number,
+		imageUrl = this.imageUrl,
+		locations = this.locations.sortedBy { it.name }.map {
+			LocationByFloorDetails(
+				id = it.id.toString(),
+				name = it.name,
+				aliasName = it.aliasName,
+			)
+		}
+	)
 }

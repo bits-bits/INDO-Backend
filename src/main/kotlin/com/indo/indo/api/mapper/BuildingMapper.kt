@@ -5,15 +5,12 @@ import com.indo.indo.api.dto.FloorBasicDetails
 import com.indo.indo.entity.Building
 import org.springframework.stereotype.Component
 
-@Component
-class BuildingMapper(private val floorMapper: FloorMapper) {
-	fun toBuildingDetailsResponse(building: Building) =
-		BuildingDetailsResponse(
-			id = building.id.toString(),
-			name = building.name,
-			imageUrl = building.imageUrl,
-			floorsBasicDetails = building.floors.sortedBy { it.number }.map {
-				floorMapper.toBasicDetails(it)
-			}
-		)
-}
+fun Building.toBuildingDetailsResponse() =
+	BuildingDetailsResponse(
+		id = this.id.toString(),
+		name = this.name,
+		imageUrl = this.imageUrl,
+		floorsBasicDetails = this.floors.sortedBy { it.number }.map {
+			it.toBasicDetails()
+		}
+	)

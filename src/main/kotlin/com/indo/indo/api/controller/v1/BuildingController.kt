@@ -1,6 +1,7 @@
 package com.indo.indo.api.controller.v1
 
 import com.indo.indo.api.dto.BuildingDetailsResponse
+import com.indo.indo.api.mapper.toBuildingDetailsResponse
 import com.indo.indo.exception.InvalidIdFormException
 import com.indo.indo.exception.ResourceNotFoundException
 import com.indo.indo.service.BuildingService
@@ -11,11 +12,10 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
-import com.indo.indo.api.mapper.BuildingMapper
 
 @RestController
 @RequestMapping("/api/v1/building")
-class BuildingController(private val buildingService: BuildingService, private val buildingMapper: BuildingMapper) {
+class BuildingController(private val buildingService: BuildingService) {
 	@GetMapping("/{id}")
 	fun getBuildingById(@PathVariable id: String): ResponseEntity<BuildingDetailsResponse> {
 		if (!UUIDUtils.isValidUUIDString(id)) throw InvalidIdFormException("Invalid building Id form")
@@ -23,6 +23,6 @@ class BuildingController(private val buildingService: BuildingService, private v
 		val building = buildingService.findBuildingById(UUID.fromString(id))
 			?: throw ResourceNotFoundException("Building with given Id is not found")
 
-		return ResponseEntity.ok(buildingMapper.toBuildingDetailsResponse(building))
+		return ResponseEntity.ok(building.toBuildingDetailsResponse())
 	}
 }
