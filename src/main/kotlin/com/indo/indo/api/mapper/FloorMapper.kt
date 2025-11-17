@@ -4,7 +4,6 @@ import com.indo.indo.api.dto.FloorBasicDetails
 import com.indo.indo.api.dto.FloorDetailsResponse
 import com.indo.indo.api.dto.LocationByFloorDetails
 import com.indo.indo.entity.Floor
-import org.springframework.stereotype.Component
 
 fun Floor.toBasicDetails(): FloorBasicDetails {
 	return FloorBasicDetails(

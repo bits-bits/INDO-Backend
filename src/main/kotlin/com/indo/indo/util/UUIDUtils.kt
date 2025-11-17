@@ -1,6 +1,5 @@
 package com.indo.indo.util
 
-import java.lang.IllegalArgumentException
 import java.util.UUID
 
 class UUIDUtils {
