@@ -10,4 +10,8 @@ class BuildingService(private val buildingRepository: BuildingRepository) {
 	fun findBuildingById(buildingId: UUID): Building? {
 		return buildingRepository.findById(buildingId).orElse(null)
 	}
+
+	fun getAllBuildings(): List<Building> {
+		return buildingRepository.findAll()
+	}
 }

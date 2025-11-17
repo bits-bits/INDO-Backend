@@ -1,6 +1,8 @@
 package com.indo.indo.api.controller.v1
 
+import com.indo.indo.api.dto.BuildingBasicDetails
 import com.indo.indo.api.dto.BuildingDetailsResponse
+import com.indo.indo.api.mapper.toBuildingBasicDetails
 import com.indo.indo.api.mapper.toBuildingDetailsResponse
 import com.indo.indo.exception.InvalidIdFormException
 import com.indo.indo.exception.ResourceNotFoundException
@@ -23,5 +25,11 @@ class BuildingController(private val buildingService: BuildingService) {
 			?: throw ResourceNotFoundException("Building with given Id is not found")
 
 		return ResponseEntity.ok(building.toBuildingDetailsResponse())
+	}
+
+	@GetMapping("/all")
+	fun getAllBuildings(): ResponseEntity<List<BuildingBasicDetails>> {
+		return ResponseEntity.ok(
+			buildingService.getAllBuildings().map { building -> building.toBuildingBasicDetails() })
 	}
 }
