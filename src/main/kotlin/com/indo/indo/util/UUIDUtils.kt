@@ -5,12 +5,11 @@ import java.util.UUID
 
 class UUIDUtils {
 	companion object Utils {
-		fun isValidUUIDString(uuid: String): Boolean {
-			try {
+		fun getUUIDOrNull(uuid: String): UUID? {
+			return try {
 				UUID.fromString(uuid);
-				return true;
-			} catch (e: IllegalArgumentException) {
-				return false;
+			} catch (e: kotlin.IllegalArgumentException) {
+				null;
 			}
 		}
 	}

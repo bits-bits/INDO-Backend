@@ -18,9 +18,9 @@ import java.util.UUID
 class BuildingController(private val buildingService: BuildingService) {
 	@GetMapping("/{id}")
 	fun getBuildingById(@PathVariable id: String): ResponseEntity<BuildingDetailsResponse> {
-		if (!UUIDUtils.isValidUUIDString(id)) throw InvalidIdFormException("Invalid building Id form")
+		val uuid = UUIDUtils.getUUIDOrNull(id) ?: throw InvalidIdFormException("Invalid building Id form")
 
-		val building = buildingService.findBuildingById(UUID.fromString(id))
+		val building = buildingService.findBuildingById(uuid)
 			?: throw ResourceNotFoundException("Building with given Id is not found")
 
 		return ResponseEntity.ok(building.toBuildingDetailsResponse())

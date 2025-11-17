@@ -18,9 +18,9 @@ import java.util.UUID
 class FloorController(private val floorService: FloorService) {
 	@GetMapping("/{id}")
 	fun getFloorById(@PathVariable id: String): ResponseEntity<FloorDetailsResponse> {
-		if (!UUIDUtils.isValidUUIDString(id)) throw InvalidIdFormException("Invalid floor Id form")
+		val uuid = UUIDUtils.getUUIDOrNull(id) ?: throw InvalidIdFormException("Invalid floor Id form")
 
-		val floor = floorService.findFloorById(UUID.fromString(id))
+		val floor = floorService.findFloorById(uuid)
 			?: throw ResourceNotFoundException("Floor with given Id is not found")
 
 		return ResponseEntity.ok(floor.toDetailsResponse())
