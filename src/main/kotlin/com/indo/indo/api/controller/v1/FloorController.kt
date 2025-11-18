@@ -1,6 +1,6 @@
 package com.indo.indo.api.controller.v1
 
-import com.indo.indo.api.dto.FloorDetailsResponse
+import com.indo.indo.api.dto.FloorDetailsDto
 import com.indo.indo.api.mapper.toDetailsResponse
 import com.indo.indo.exception.InvalidIdFormException
 import com.indo.indo.exception.ResourceNotFoundException
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/v1/floor")
 class FloorController(private val floorService: FloorService) {
 	@GetMapping("/{id}")
-	fun getFloorById(@PathVariable id: String): ResponseEntity<FloorDetailsResponse> {
+	fun getFloorById(@PathVariable id: String): ResponseEntity<FloorDetailsDto> {
 		val uuid = UUIDUtils.getUuidOrNull(id) ?: throw InvalidIdFormException("Invalid floor Id form")
 
 		val floor = floorService.findFloorById(uuid)

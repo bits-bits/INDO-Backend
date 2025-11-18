@@ -1,11 +1,11 @@
 package com.indo.indo.api.mapper
 
-import com.indo.indo.api.dto.BuildingBasicDetails
-import com.indo.indo.api.dto.BuildingDetailsResponse
+import com.indo.indo.api.dto.BuildingDto
+import com.indo.indo.api.dto.BuildingDetailsDto
 import com.indo.indo.entity.Building
 
 fun Building.toBuildingDetailsResponse() =
-	BuildingDetailsResponse(
+	BuildingDetailsDto(
 		id = this.id.toString(),
 		name = this.name,
 		imageUrl = this.imageUrl,
@@ -14,8 +14,8 @@ fun Building.toBuildingDetailsResponse() =
 		}
 	)
 
-fun Building.toBuildingBasicDetails(): BuildingBasicDetails {
-	return BuildingBasicDetails(
+fun Building.toBuildingBasicDetails(): BuildingDto {
+	return BuildingDto(
 		id = this.id.toString(),
 		name = this.name,
 		imageUrl = this.imageUrl,

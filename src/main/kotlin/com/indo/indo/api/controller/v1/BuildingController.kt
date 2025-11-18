@@ -1,7 +1,7 @@
 package com.indo.indo.api.controller.v1
 
-import com.indo.indo.api.dto.BuildingBasicDetails
-import com.indo.indo.api.dto.BuildingDetailsResponse
+import com.indo.indo.api.dto.BuildingDto
+import com.indo.indo.api.dto.BuildingDetailsDto
 import com.indo.indo.api.mapper.toBuildingBasicDetails
 import com.indo.indo.api.mapper.toBuildingDetailsResponse
 import com.indo.indo.exception.InvalidIdFormException
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/v1/building")
 class BuildingController(private val buildingService: BuildingService) {
 	@GetMapping("/{id}")
-	fun getBuildingById(@PathVariable id: String): ResponseEntity<BuildingDetailsResponse> {
+	fun getBuildingById(@PathVariable id: String): ResponseEntity<BuildingDetailsDto> {
 		val uuid = UUIDUtils.getUuidOrNull(id) ?: throw InvalidIdFormException("Invalid building Id form")
 
 		val building = buildingService.findBuildingById(uuid)
@@ -28,7 +28,7 @@ class BuildingController(private val buildingService: BuildingService) {
 	}
 
 	@GetMapping("/all")
-	fun getAllBuildings(): ResponseEntity<List<BuildingBasicDetails>> {
+	fun getAllBuildings(): ResponseEntity<List<BuildingDto>> {
 		return ResponseEntity.ok(
 			buildingService.getAllBuildings().map { building -> building.toBuildingBasicDetails() })
 	}
