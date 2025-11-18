@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController
 class FloorController(private val floorService: FloorService) {
 	@GetMapping("/{id}")
 	fun getFloorById(@PathVariable id: String): ResponseEntity<FloorDetailsResponse> {
-		val uuid = UUIDUtils.getUUIDOrNull(id) ?: throw InvalidIdFormException("Invalid floor Id form")
+		val uuid = UUIDUtils.getUuidOrNull(id) ?: throw InvalidIdFormException("Invalid floor Id form")
 
 		val floor = floorService.findFloorById(uuid)
 			?: throw ResourceNotFoundException("Floor with given Id is not found")

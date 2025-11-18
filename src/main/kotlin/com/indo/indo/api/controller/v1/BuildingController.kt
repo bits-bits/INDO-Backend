@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController
 class BuildingController(private val buildingService: BuildingService) {
 	@GetMapping("/{id}")
 	fun getBuildingById(@PathVariable id: String): ResponseEntity<BuildingDetailsResponse> {
-		val uuid = UUIDUtils.getUUIDOrNull(id) ?: throw InvalidIdFormException("Invalid building Id form")
+		val uuid = UUIDUtils.getUuidOrNull(id) ?: throw InvalidIdFormException("Invalid building Id form")
 
 		val building = buildingService.findBuildingById(uuid)
 			?: throw ResourceNotFoundException("Building with given Id is not found")

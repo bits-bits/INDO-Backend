@@ -4,9 +4,9 @@ import java.util.UUID
 
 class UUIDUtils {
 	companion object Utils {
-		fun getUUIDOrNull(uuid: String): UUID? {
+		fun getUuidOrNull(id: String): UUID? {
 			return try {
-				UUID.fromString(uuid);
+				UUID.fromString(id);
 			} catch (e: kotlin.IllegalArgumentException) {
 				null;
 			}
