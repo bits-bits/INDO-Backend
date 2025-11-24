@@ -8,7 +8,8 @@ import com.indo.indo.entity.Floor
 fun Floor.toBasicDetails(): FloorDto {
 	return FloorDto(
 		id = this.id.toString(),
-		number = this.number
+		number = this.number,
+		imageUrl = this.imageUrl
 	)
 }
 
