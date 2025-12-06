@@ -7,18 +7,18 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 @RestControllerAdvice
 class GlobalExceptionHandler {
 
-    @ExceptionHandler(LocationNotFoundException::class)
-    fun handleLocationNotFound(ex: LocationNotFoundException): ResponseEntity<Map<String, String>> {
-        return ResponseEntity.status(404).body(mapOf("error" to "${ex.message}"))
-    }
+	@ExceptionHandler(ResourceNotFoundException::class)
+	fun handleResourceNotFound(ex: ResourceNotFoundException): ResponseEntity<Map<String, String>> {
+		return ResponseEntity.status(404).body(mapOf("error" to "${ex.message}"))
+	}
 
-    @ExceptionHandler(InvalidIdFormException::class)
-    fun handleInvalidIdForm(ex: InvalidIdFormException): ResponseEntity<Map<String, String>> {
-        return ResponseEntity.status(404).body(mapOf("error" to "${ex.message}"))
-    }
+	@ExceptionHandler(InvalidIdFormException::class)
+	fun handleInvalidIdForm(ex: InvalidIdFormException): ResponseEntity<Map<String, String>> {
+		return ResponseEntity.status(400).body(mapOf("error" to "${ex.message}"))
+	}
 
-    @ExceptionHandler(Exception::class)
-    fun handleGenericException(ex: Exception): ResponseEntity<Map<String, String>> {
-        return ResponseEntity.status(500).body(mapOf("error" to "Internal Server Error"))
-    }
+	@ExceptionHandler(Exception::class)
+	fun handleGenericException(ex: Exception): ResponseEntity<Map<String, String>> {
+		return ResponseEntity.status(500).body(mapOf("error" to "Internal Server Error"))
+	}
 }
