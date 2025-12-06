@@ -13,8 +13,8 @@ class Location(
 	@Column(columnDefinition = "uuid", updatable = false, nullable = false)
 	val id: UUID = UUID.randomUUID(),
 
-	@Column(nullable = false)
-	val name: String,
+	@Column
+	val name: String?,
 
 	@Column
 	val aliasName: String?,
