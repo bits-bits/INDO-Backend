@@ -11,6 +11,10 @@ class NavigationService(
     private val locationService: LocationService
 ) {
 
+    fun getRoute(startCoordinate: Coordinate, endCoordinate: Coordinate): Route {
+        return getOutdoorRoute(startCoordinate, endCoordinate)
+    }
+
     fun getRouteToLocation(): Route {
         // locationId -> location -> coordinates, entry-point to building(door)
         return getTotalRoute(
