@@ -1,5 +1,6 @@
 package com.indo.indo.repository.outdoorNavigation
 
+import com.indo.indo.config.ApiProperties
 import com.indo.indo.entity.Route
 import com.indo.indo.entity.toRoute
 import com.indo.indo.exception.ResourceNotFoundException
@@ -8,7 +9,10 @@ import org.springframework.stereotype.Repository
 import org.springframework.web.client.getForEntity
 
 @Repository
-class OutdoorNavigationRepositoryImpl(restTemplateBuilder: RestTemplateBuilder) : OutdoorNavigationRepository {
+class OutdoorNavigationRepositoryImpl(
+    restTemplateBuilder: RestTemplateBuilder, private val apiProps: ApiProperties
+) :
+    OutdoorNavigationRepository {
     private val restTemplate = restTemplateBuilder.build()
 
     private fun makeRequest(url: String): RouteResponse {
@@ -35,7 +39,7 @@ class OutdoorNavigationRepositoryImpl(restTemplateBuilder: RestTemplateBuilder) 
             ("https://api.geoapify.com/v1/routing?" +
                     "waypoints=$startPointLatitude,$startPointLongitude|$endPointLatitude,$endPointLongitude&" +
                     "mode=walk&" +
-                    "apiKey=735d60b9c6ae49c49cb3deaed2e6780d")
+                    "apiKey=${apiProps.key}")
         return makeRequest(url = url).toRoute()
     }
 }
