@@ -34,7 +34,7 @@ class Point(
     val type: CoordinateType,
 
     @OneToOne
-    @JoinColumn(nullable = true, name = "point")
+    @JoinColumn(nullable = true, name = "projection_point_id")
     val projection: Point?,
 
     @ManyToOne(fetch = FetchType.LAZY)
