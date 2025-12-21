@@ -1,9 +1,16 @@
 package com.indo.indo.service
 
 import com.indo.indo.entity.Coordinate
+import com.indo.indo.entity.CoordinateType
+import com.indo.indo.entity.Location
+import com.indo.indo.entity.Point
 import com.indo.indo.entity.Route
+import com.indo.indo.entity.toCoordinate
+import com.indo.indo.exception.ResourceNotFoundException
 import com.indo.indo.repository.outdoorNavigation.OutdoorNavigationRepository
+import com.indo.indo.util.NavigationUtils
 import org.springframework.stereotype.Service
+import java.util.UUID
 
 @Service
 class NavigationService(
@@ -15,25 +22,17 @@ class NavigationService(
         return getOutdoorRoute(startCoordinate, endCoordinate)
     }
 
-    fun getRouteToLocation(): Route {
-        // locationId -> location -> coordinates, entry-point to building(door)
-        return getTotalRoute(
-            startDestination = Coordinate(
-                latitude = 31.208112699082903,
-                longitude = 29.922827843407845
-            ), endDestination = Coordinate(latitude = 31.206379104112784, longitude = 29.924302984554174)
-        )
-    }
+    fun getRouteToLocation(fromCoordinate: Coordinate, locationId: UUID): Route {
+        val location =
+            locationService.findLocationById(locationId)
+                ?: throw ResourceNotFoundException("No location found with that Id")
 
-    private fun getTotalRoute(startDestination: Coordinate, endDestination: Coordinate): Route {
-        // endDestination -> projection on street = new end destination
-        // startDestination -> start projection, endDestination -> end projection
-        val startProjection = startDestination
-        val endProjection = endDestination
-        val outdoorRoute =
-            getOutdoorRoute(startStreetDestination = startProjection, endStreetDestination = endProjection)
-        val indoorRoute = getIndoorRoute(startProjection, endProjection)
-        return Route(coordinates = outdoorRoute.coordinates + indoorRoute.coordinates)
+        // TODO indoor route should be added in future
+        val outdoorRoute = determineOutdoorRouteToLocation(fromCoordinate, location)
+        val indoorRoute = Route(listOf())
+        val totalRoute = Route(outdoorRoute.coordinates + indoorRoute.coordinates)
+
+        return totalRoute
     }
 
     private fun getOutdoorRoute(
@@ -53,6 +52,27 @@ class NavigationService(
         endIndoorDestination: Coordinate?
     ): Route {
         return Route(emptyList())
+    }
+
+    private fun determineOutdoorRouteToLocation(fromCoordinate: Coordinate, location: Location): Route {
+        val entryPoints = location.building.points.filter { it.type == CoordinateType.ENTRY_POINT }
+
+        val chosenEntryPoint = getNearestEntryPoint(fromCoordinate, entryPoints)
+
+        val projectionPoint =
+            chosenEntryPoint.projection ?: throw ResourceNotFoundException("No projection found for entry point")
+        val projectionPointCoordinate = projectionPoint.toCoordinate()
+
+        return getOutdoorRoute(fromCoordinate, projectionPointCoordinate)
+    }
+
+    private fun getNearestEntryPoint(fromCoordinate: Coordinate, entryPoints: List<Point>): Point {
+        return entryPoints.minByOrNull {
+            NavigationUtils.getDistanceBetweenCoordinates(
+                fromCoordinate,
+                it.toCoordinate()
+            )
+        } ?: throw ResourceNotFoundException("No entry point was found")
     }
 }
 

@@ -57,3 +57,5 @@ enum class CoordinateType(@JsonValue val pointName: String){
     DESTINATION(pointName = "destination"),
     PROJECTION(pointName = "projection")
 }
+
+fun Point.toCoordinate() = Coordinate(this.latitude, this.longitude)
