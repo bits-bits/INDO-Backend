@@ -16,10 +16,7 @@ class OutdoorNavigationRepositoryImpl(
     private val restTemplate = restTemplateBuilder.build()
 
     private fun makeRequest(url: String): RouteResponse {
-        println("TAAG URL being sent: $url")
-        println("TAAG in make request 1")
         val response = restTemplate.getForEntity<RouteResponse>(url)
-        println("TAAG in make request: response is $response")
 
         if (!response.statusCode.is2xxSuccessful) {
             throw ResourceNotFoundException("Weather API error: ${response.statusCode}")
