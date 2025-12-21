@@ -5,8 +5,10 @@ import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
+import jakarta.persistence.FetchType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
 import org.hibernate.annotations.CreationTimestamp
@@ -35,8 +37,9 @@ class Point(
     @JoinColumn(nullable = true, name = "point")
     val projection: Point?,
 
-    @Column
-    val buildingId: UUID,
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "building_id", nullable = false)
+    val building: Building,
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
