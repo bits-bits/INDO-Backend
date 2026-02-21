@@ -22,8 +22,8 @@ fun RouteResponse.toRoute(): Route {
     println("TAAG in mapper 2: $route")
     val points: MutableList<Coordinate> = mutableListOf()
     route?.forEach { point ->
-        val latitude = point[0]
-        val longitude = point[1]
+        val latitude = point[1]
+        val longitude = point[0]
         val coordinate = Coordinate(latitude = latitude, longitude = longitude)
         points.add(coordinate)
     }
