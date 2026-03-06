@@ -11,6 +11,7 @@ import com.indo.indo.repository.outdoorNavigation.OutdoorNavigationRepository
 import com.indo.indo.util.NavigationUtils
 import org.springframework.stereotype.Service
 import java.util.UUID
+import kotlin.math.sqrt
 
 @Service
 class NavigationService(
@@ -18,21 +19,29 @@ class NavigationService(
     private val locationService: LocationService
 ) {
 
+    @Deprecated("")
     fun getRoute(startCoordinate: Coordinate, endCoordinate: Coordinate): Route {
         return getOutdoorRoute(startCoordinate, endCoordinate)
     }
 
-    fun getRouteToLocation(fromCoordinate: Coordinate, locationId: UUID): Route {
+    fun getTotalRouteAndCheckPointsToLocation(fromCoordinate: Coordinate, locationId: UUID): Pair<Route, Route> {
         val location =
             locationService.findLocationById(locationId)
                 ?: throw ResourceNotFoundException("No location found with that Id")
 
-        // TODO indoor route should be added in future
-        val outdoorRoute = determineOutdoorRouteToLocation(fromCoordinate, location)
-        val indoorRoute = Route(listOf())
+        val entryPoints = location.building.points.filter { it.type == CoordinateType.ENTRY_POINT }
+        val chosenEntryPoint = getNearestEntryPoint(fromCoordinate, entryPoints)
+        val outdoorRoute = determineOutdoorRouteToLocation(fromCoordinate, chosenEntryPoint)
+        val indoorRoute = getIndoorRoute(
+            startIndoorCoordinate = Coordinate(
+                latitude = chosenEntryPoint.latitude,
+                longitude = chosenEntryPoint.longitude
+            ),
+            destination = location
+        )
         val totalRoute = Route(outdoorRoute.coordinates + indoorRoute.coordinates)
 
-        return totalRoute
+        return Pair(totalRoute, indoorRoute)
     }
 
     private fun getOutdoorRoute(
@@ -48,19 +57,50 @@ class NavigationService(
     }
 
     private fun getIndoorRoute(
-        startIndoorDestination: Coordinate?,
-        endIndoorDestination: Coordinate?
+        startIndoorCoordinate: Coordinate,
+        destination: Location
     ): Route {
-        return Route(emptyList())
+        val checkpoints = destination.building.points
+            .filter { it.type == CoordinateType.CHECK_POINT }
+            .map { it.toCoordinate() }
+            .toMutableList()
+
+        val destinationCoordinate = Coordinate(destination.latitude, destination.longitude)
+
+        if (destination.floor.number == 0){
+            val route = mutableListOf<Coordinate>()
+            var current = startIndoorCoordinate
+
+            while (checkpoints.isNotEmpty()) {
+                val nearest = checkpoints
+                    .filter { distanceBetween(it, destinationCoordinate) < distanceBetween(current, destinationCoordinate) }
+                    .minByOrNull { distanceBetween(current, it) }
+                    ?: break
+
+                route.add(nearest)
+                checkpoints.remove(nearest)
+                current = nearest
+            }
+
+            route.add(destinationCoordinate)
+
+            return Route(listOf(startIndoorCoordinate) + route)
+        }else{
+            // TODO: logic in case of stairs
+            return Route(emptyList())
+        }
     }
 
-    private fun determineOutdoorRouteToLocation(fromCoordinate: Coordinate, location: Location): Route {
-        val entryPoints = location.building.points.filter { it.type == CoordinateType.ENTRY_POINT }
+    private fun distanceBetween(a: Coordinate, b: Coordinate): Double {
+        val dx = a.latitude - b.latitude
+        val dy = a.longitude - b.longitude
+        return sqrt(dx * dx + dy * dy)
+    }
 
-        val chosenEntryPoint = getNearestEntryPoint(fromCoordinate, entryPoints)
+    private fun determineOutdoorRouteToLocation(fromCoordinate: Coordinate, entryPoint: Point): Route {
 
         val projectionPoint =
-            chosenEntryPoint.projection ?: throw ResourceNotFoundException("No projection found for entry point")
+            entryPoint.projection ?: throw ResourceNotFoundException("No projection found for entry point")
         val projectionPointCoordinate = projectionPoint.toCoordinate()
 
         return getOutdoorRoute(fromCoordinate, projectionPointCoordinate)
@@ -75,10 +115,3 @@ class NavigationService(
         } ?: throw ResourceNotFoundException("No entry point was found")
     }
 }
-
-
-// start        end
-// indoor       indoor              no outdoor
-// indoor       outdoor
-// outdoor      indoor
-// outdoor      outdoor             no indoor

@@ -4,7 +4,6 @@ import com.indo.indo.api.dto.RouteDto
 import com.indo.indo.api.mapper.parseCoordinate
 import com.indo.indo.api.mapper.toRouteDto
 import com.indo.indo.exception.InvalidFormException
-import com.indo.indo.service.LocationService
 import com.indo.indo.service.NavigationService
 import com.indo.indo.util.UUIDUtils
 import org.springframework.http.ResponseEntity
@@ -30,12 +29,14 @@ class NavigationController(private val navigationService: NavigationService) {
     fun getRouteToLocation(
         @RequestParam("from") from: String,
         @RequestParam("toLocationId") toLocationId: String
-    ): ResponseEntity<RouteDto> {
+    ): ResponseEntity<List<RouteDto>> {
         val fromCoordinate = from.parseCoordinate()
         val locationId =
             UUIDUtils.getUuidOrNull(toLocationId) ?: throw InvalidFormException("Invalid coordinate format")
 
-        val route = navigationService.getRouteToLocation(fromCoordinate, locationId).toRouteDto()
-        return ResponseEntity.ok(route)
+        val route = navigationService.getTotalRouteAndCheckPointsToLocation(fromCoordinate, locationId).first.toRouteDto()
+        val indoorRoute = navigationService.getTotalRouteAndCheckPointsToLocation(fromCoordinate, locationId).second.toRouteDto()
+        val response = listOf(route,indoorRoute)
+        return ResponseEntity.ok(response)
     }
 }

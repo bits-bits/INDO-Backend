@@ -18,7 +18,7 @@ import java.util.UUID
 
 @Entity
 @Table(name = "points", schema = "navigation")
-class Point(
+data class Point(
     @Id
     @Column(columnDefinition = "uuid", updatable = false, nullable = false)
     val id: UUID = UUID.randomUUID(),
@@ -40,6 +40,9 @@ class Point(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "building_id", nullable = false)
     val building: Building,
+
+    @Column(name = "floor_id", columnDefinition = "uuid[]")
+    val floorIds: List<UUID>,
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
