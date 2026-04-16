@@ -27,6 +27,12 @@ class Location(
 	@JoinColumn(name = "floor_id", nullable = false)
 	val floor: Floor,
 
+    @Column(nullable = false)
+    val latitude: Double,
+
+    @Column(nullable = false)
+    val longitude: Double,
+
 	@CreationTimestamp
 	@Column(nullable = false, updatable = false)
 	val createdAt: LocalDateTime,

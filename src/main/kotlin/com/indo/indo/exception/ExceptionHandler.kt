@@ -17,6 +17,11 @@ class GlobalExceptionHandler {
 		return ResponseEntity.status(400).body(mapOf("error" to "${ex.message}"))
 	}
 
+	@ExceptionHandler(InvalidFormException::class)
+	fun handleInvalidForm(ex: InvalidFormException): ResponseEntity<Map<String, String>> {
+		return ResponseEntity.status(400).body(mapOf("error" to "${ex.message}"))
+	}
+
 	@ExceptionHandler(Exception::class)
 	fun handleGenericException(ex: Exception): ResponseEntity<Map<String, String>> {
 		return ResponseEntity.status(500).body(mapOf("error" to "Internal Server Error"))

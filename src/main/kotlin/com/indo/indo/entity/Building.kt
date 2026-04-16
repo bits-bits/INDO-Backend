@@ -26,6 +26,14 @@ class Building(
 	@OneToMany(mappedBy = "building", fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
 	val locations: MutableList<Location> = mutableListOf(),
 
+	@OneToMany(
+		mappedBy = "building",
+		fetch = FetchType.LAZY,
+		cascade = [CascadeType.ALL],
+		orphanRemoval = true
+	)
+	val points: MutableList<Point> = mutableListOf(),
+
 	@CreationTimestamp
 	@Column(nullable = false, updatable = false)
 	val createdAt: LocalDateTime,
