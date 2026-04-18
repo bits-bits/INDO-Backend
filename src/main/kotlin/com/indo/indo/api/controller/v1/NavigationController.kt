@@ -34,9 +34,14 @@ class NavigationController(private val navigationService: NavigationService) {
         val locationId =
             UUIDUtils.getUuidOrNull(toLocationId) ?: throw InvalidFormException("Invalid coordinate format")
 
-        val route = navigationService.getTotalRouteAndCheckPointsToLocation(fromCoordinate, locationId).first.toRouteDto()
-        val indoorRoute = navigationService.getTotalRouteAndCheckPointsToLocation(fromCoordinate, locationId).second.toRouteDto()
-        val response = listOf(route,indoorRoute)
+
+        val routes = navigationService.getTotalRouteAndCheckPointsToLocation(fromCoordinate, locationId)
+
+        val firstRoute = routes.first.toRouteDto()
+        val secondRoute = routes.second.toRouteDto()
+        val usedCheckPoints = routes.third.toRouteDto()
+
+        val response = listOf(firstRoute,secondRoute,usedCheckPoints)
         return ResponseEntity.ok(response)
     }
 }

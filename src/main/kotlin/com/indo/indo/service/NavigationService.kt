@@ -24,7 +24,7 @@ class NavigationService(
         return getOutdoorRoute(startCoordinate, endCoordinate)
     }
 
-    fun getTotalRouteAndCheckPointsToLocation(fromCoordinate: Coordinate, locationId: UUID): Pair<Route, Route> {
+    fun getTotalRouteAndCheckPointsToLocation(fromCoordinate: Coordinate, locationId: UUID): Triple<Route, Route, Route> {
         val location =
             locationService.findLocationById(locationId)
                 ?: throw ResourceNotFoundException("No location found with that Id")
@@ -32,16 +32,17 @@ class NavigationService(
         val entryPoints = location.building.points.filter { it.type == CoordinateType.ENTRY_POINT }
         val chosenEntryPoint = getNearestEntryPoint(fromCoordinate, entryPoints)
         val outdoorRoute = determineOutdoorRouteToLocation(fromCoordinate, chosenEntryPoint)
-        val indoorRoute = getIndoorRoute(
+        val indoorRoutes = getIndoorRoute(
             startIndoorCoordinate = Coordinate(
                 latitude = chosenEntryPoint.latitude,
                 longitude = chosenEntryPoint.longitude
             ),
             destination = location
         )
-        val totalRoute = Route(outdoorRoute.coordinates + indoorRoute.coordinates)
-
-        return Pair(totalRoute, indoorRoute)
+        val firstRoute = Route(outdoorRoute.coordinates + indoorRoutes.first.coordinates)            // outdoor + ground floor
+        val secondRoute = indoorRoutes.second ?: Route(emptyList())                     // upper floor
+        val usedCheckPoints = indoorRoutes.first
+        return Triple(firstRoute, secondRoute, usedCheckPoints)
     }
 
     private fun getOutdoorRoute(
@@ -59,36 +60,58 @@ class NavigationService(
     private fun getIndoorRoute(
         startIndoorCoordinate: Coordinate,
         destination: Location
-    ): Route {
+    ): Pair<Route, Route?> {
         val checkpoints = destination.building.points
             .filter { it.type == CoordinateType.CHECK_POINT }
             .map { it.toCoordinate() }
-            .toMutableList()
+        
 
         val destinationCoordinate = Coordinate(destination.latitude, destination.longitude)
 
-        if (destination.floor.number == 0){
-            val route = mutableListOf<Coordinate>()
-            var current = startIndoorCoordinate
+        if (destination.floor.number == 0) {
+            val route = buildRoute(startIndoorCoordinate, destinationCoordinate, checkpoints)
+            return Pair(Route(route), null)
+        } else {
+            val stairs = destination.building.points
+                .filter { it.type == CoordinateType.STAIRS }
+                .map { it.toCoordinate() }
 
-            while (checkpoints.isNotEmpty()) {
-                val nearest = checkpoints
-                    .filter { distanceBetween(it, destinationCoordinate) < distanceBetween(current, destinationCoordinate) }
-                    .minByOrNull { distanceBetween(current, it) }
-                    ?: break
+            // nearest stairs to the destination
+            val nearestStairs = stairs.minByOrNull { distanceBetween(it, destinationCoordinate) }
+                ?: return Pair(Route(emptyList()), null)
 
-                route.add(nearest)
-                checkpoints.remove(nearest)
-                current = nearest
-            }
+            // route from start -> stairs (ground floor)
+            val firstFloorRoute = buildRoute(startIndoorCoordinate, nearestStairs, checkpoints)
 
-            route.add(destinationCoordinate)
+            // route from stairs -> destination (upper floor, no checkpoints needed)
+            val upperFloorRoute = buildRoute(nearestStairs, destinationCoordinate, checkpoints)
 
-            return Route(listOf(startIndoorCoordinate) + route)
-        }else{
-            // TODO: logic in case of stairs
-            return Route(emptyList())
+            return Pair(Route(firstFloorRoute), Route(upperFloorRoute))
         }
+    }
+
+    private fun buildRoute(
+        start: Coordinate,
+        destination: Coordinate,
+        checkpoints: List<Coordinate>  // no longer MutableList
+    ): List<Coordinate> {
+        val remaining = checkpoints.toMutableList()  // copy internally
+        val route = mutableListOf<Coordinate>()
+        var current = start
+
+        while (remaining.isNotEmpty()) {
+            val nearest = remaining
+                .filter { distanceBetween(it, destination) < distanceBetween(current, destination) }
+                .minByOrNull { distanceBetween(current, it) }
+                ?: break
+
+            route.add(nearest)
+            remaining.remove(nearest)
+            current = nearest
+        }
+
+        route.add(destination)
+        return listOf(start) + route
     }
 
     private fun distanceBetween(a: Coordinate, b: Coordinate): Double {
